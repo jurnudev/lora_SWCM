@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta id="theme-color-meta" name="theme-color" content="#f4f6f9">
-  <title>KPH LoRa Smart Farm</title>
+  <title>SWCM Smart Farm K674</title>
   <style>
-    /* ===== BLYNK MOBILE THEME (DARK/LIGHT) ===== */
+    /* ===== THEME DEFINITIONS ===== */
     :root {
       --bg-app: #121212;
       --bg-card: #1e1e1e;
@@ -22,15 +22,6 @@
       --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.3);
 
       --accent: #22c55e;
-      --z1-color: #facc15;
-      /* Yellow */
-      --z2-color: #ec4899;
-      /* Pink */
-      --z3-color: #3b82f6;
-      /* Blue */
-      --z4-color: #10b981;
-      /* Green */
-
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --header-h: calc(100px + var(--safe-top));
@@ -84,10 +75,6 @@
         max-width: 800px;
         border-left: 1px solid var(--border);
         border-right: 1px solid var(--border);
-        border-radius: 16px;
-        margin: 20px auto;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        min-height: calc(100vh - 40px);
       }
     }
 
@@ -136,30 +123,22 @@
       letter-spacing: -0.5px;
     }
 
-    .online-dot {
-      width: 10px;
-      height: 10px;
+    /* Large LED Status Indicators */
+    .led-dot {
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+      background-color: #4b5563;
+      /* Gray OFFLINE */
+      box-shadow: 0 0 5px rgba(75, 85, 99, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-block;
     }
 
-    .online-dot.offline {
-      background: #ef4444;
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-    }
-
-    .header-meta {
-      font-size: 0.9rem;
-      color: var(--text-dim);
-      display: flex;
-      gap: 15px;
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    .led-dot.active {
+      background-color: #10b981;
+      /* Green ONLINE */
+      box-shadow: 0 0 15px #10b981, 0 0 5px #10b981;
     }
 
     /* ===== MAIN CONTENT ===== */
@@ -182,106 +161,79 @@
       }
     }
 
-    /* ===== VALVE CONTROLS (2 COLUMNS) ===== */
-    .valve-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .valve-unit {
+    /* ===== Battle/Power Switch Button Style ===== */
+    .power-btn-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
       background: var(--bg-card);
-      padding: 15px;
-      border-radius: 12px;
+      padding: 20px 15px;
+      border-radius: 16px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-card);
+      width: 100%;
     }
 
-    .valve-label {
-      font-size: 0.85rem;
-      color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .valve-btn {
-      width: 75px;
-      height: 75px;
+    .power-btn {
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
+      background: #374151;
+      border: 3px solid #1f2937;
+      color: #9ca3af;
+      font-size: 2.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: rgba(255, 255, 255, 0.9);
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.05);
       position: relative;
-      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
     }
 
-    .valve-btn:active {
-      transform: scale(0.9);
+    .power-btn:active {
+      transform: scale(0.92);
     }
 
-    .v-z1 {
-      background: #333;
+    .power-btn.active {
+      background: #10b981;
+      border-color: #047857;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
-    .v-z1.active {
-      background: var(--z1-color);
-      box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
-      color: #000;
-    }
-
-    .v-z2 {
-      background: #333;
-    }
-
-    .v-z2.active {
-      background: var(--z2-color);
-      box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
-    }
-
-    .status-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #333;
-      margin-top: 5px;
-      transition: var(--transition);
-      border: 2px solid var(--bg-app);
-    }
-
-    .v-z1.active+.status-dot {
-      background: var(--z1-color);
-    }
-
-    .v-z2.active+.status-dot {
-      background: var(--z2-color);
+    .power-btn-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* ===== SENSOR MONITORING ===== */
     .sensor-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 20px;
       margin-bottom: 30px;
     }
 
-    .sensor-item {
+    .sensor-card {
+      background: var(--bg-card);
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .sensor-label {
       font-size: 0.85rem;
+      font-weight: 600;
       color: var(--text-dim);
     }
 
@@ -292,20 +244,20 @@
     }
 
     .sensor-value {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: #00d4ff;
     }
 
     .sensor-unit {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-dim);
     }
 
     .progress-container {
-      height: 24px;
+      height: 12px;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
       position: relative;
     }
@@ -317,25 +269,12 @@
       transition: width 1s ease;
     }
 
-    .progress-fill.green {
-      background: #22c55e;
-    }
-
-    .progress-fill.yellow {
-      background: #facc15;
-    }
-
-    .progress-fill.blue {
-      background: #3b82f6;
-    }
-
     /* ===== GAUGES (SEMICIRCLE) ===== */
     .gauge-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-top: 20px;
-      margin-bottom: 30px;
     }
 
     .gauge-container {
@@ -368,8 +307,8 @@
       fill: none;
       stroke: #3b82f6;
       stroke-width: 12;
-      stroke-dasharray: 220;
-      stroke-dashoffset: 220;
+      stroke-dasharray: 188.5;
+      stroke-dashoffset: 188.5;
       transition: stroke-dashoffset 1s ease;
       stroke-linecap: round;
     }
@@ -395,70 +334,6 @@
       font-size: 0.7rem;
       color: var(--text-muted);
       margin-top: -5px;
-    }
-
-    /* ===== DEVICE INFO SECTION ===== */
-    .info-container {
-      margin-top: 20px;
-      border-top: 1px solid var(--border);
-      padding-top: 25px;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    @media (min-width: 600px) {
-      .info-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    .info-card {
-      background: var(--bg-card);
-      padding: 12px 15px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .info-label {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-
-    .info-value {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-main);
-      word-break: break-all;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-align: center;
-      max-width: fit-content;
-    }
-
-    .status-badge.online {
-      background: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-    }
-
-    .status-badge.offline {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
     }
 
     /* ===== THEME TOGGLE ===== */
@@ -537,7 +412,7 @@
 
   <div id="loading-overlay">
     <div class="spinner"></div>
-    <p style="margin-top:15px; font-weight:600; color:var(--text-dim)">Connecting to Blynk...</p>
+    <p style="margin-top:15px; font-weight:600; color:var(--text-dim)">Connecting...</p>
   </div>
 
   <div class="app-container">
@@ -552,76 +427,53 @@
       </div>
 
       <div class="app-title-row">
-        <h1 class="app-title">SWCM LoRa Smart Farm</h1>
-        <div class="online-dot" id="hw-dot"></div>
+        <h1 class="app-title">SWCM Smart Farm K674</h1>
       </div>
 
-      <div class="header-meta">
-        <div class="meta-item"><span id="hw-text">Online</span></div>
-        <div class="meta-item">🕒 <span id="last-sync">Just now</span></div>
+      <div class="header-meta" style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
+        <div class="meta-item"
+          style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
+          <span id="dot-hw" class="led-dot"></span> Hardware
+        </div>
+        <div class="meta-item"
+          style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
+          <span id="dot-lora" class="led-dot"></span> LoRa
+        </div>
+        <div class="meta-item"
+          style="display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.9rem; margin-left: auto;">
+          🕒 <span id="live-clock">--:--:--</span>
+        </div>
       </div>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="app-main">
 
-      <!-- SECTION: MONITORS -->
       <section id="monitors" class="page-section">
-        <!-- VALVE CONTROLS -->
-        <div class="valve-grid">
-          <div class="valve-unit">
-            <span class="valve-label">วาล์วน้ำ (Watering)</span>
-            <button class="valve-btn v-z1" id="vbtn-1" onclick="toggleValve(1)">OFF</button>
-            <div class="status-dot"></div>
+        <!-- VALVE CONTROLS (Battle/Power Button Style) -->
+        <div class="valve-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+          <div class="power-btn-container">
+            <span class="power-btn-label">วาล์วน้ำ (Watering)</span>
+            <button class="power-btn" id="pbtn-1" onclick="toggleValve(1)">⏻</button>
           </div>
-          <div class="valve-unit">
-            <span class="valve-label">หัวพ่นหมอก (Spray)</span>
-            <button class="valve-btn v-z2" id="vbtn-2" onclick="toggleValve(2)">OFF</button>
-            <div class="status-dot"></div>
+          <div class="power-btn-container">
+            <span class="power-btn-label">หัวพ่นหมอก (Spray)</span>
+            <button class="power-btn" id="pbtn-2" onclick="toggleValve(2)">⏻</button>
           </div>
         </div>
 
-        <!-- SENSOR GRID -->
+        <!-- SENSOR GRID (Soil Moisture Card only) -->
         <div class="sensor-grid">
-          <div class="sensor-item">
-            <span class="sensor-label">ความชื้นในดิน (Soil Moisture)</span>
-            <div class="sensor-value-row">
-              <span class="sensor-value" id="val-soil" style="color:#22c55e">--</span>
-              <span class="sensor-unit">%</span>
+          <div class="sensor-card">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <span class="sensor-label">ความชื้นในดิน (Soil Moisture)</span>
+              <div class="sensor-value-row">
+                <span class="sensor-value" id="val-soil" style="color: #22c55e;">--</span>
+                <span class="sensor-unit">%</span>
+              </div>
             </div>
-          </div>
-          <div class="sensor-item">
-            <span class="sensor-label">ระดับความชื้น (%)</span>
             <div class="progress-container">
-              <div class="progress-fill green" id="bar-soil"></div>
-            </div>
-          </div>
-
-          <div class="sensor-item">
-            <span class="sensor-label">ความเข้มแสง (Light)</span>
-            <div class="sensor-value-row">
-              <span class="sensor-value" id="val-light" style="color:#facc15">--</span>
-              <span class="sensor-unit">%</span>
-            </div>
-          </div>
-          <div class="sensor-item">
-            <span class="sensor-label">ระดับแสง (%)</span>
-            <div class="progress-container">
-              <div class="progress-fill yellow" id="bar-light"></div>
-            </div>
-          </div>
-
-          <div class="sensor-item">
-            <span class="sensor-label">ความแรงสัญญาณ (LoRa RSSI)</span>
-            <div class="sensor-value-row">
-              <span class="sensor-value" id="val-rssi" style="color:#3b82f6">--</span>
-              <span class="sensor-unit">dBm</span>
-            </div>
-          </div>
-          <div class="sensor-item">
-            <span class="sensor-label">ระดับสัญญาณ (%)</span>
-            <div class="progress-container">
-              <div class="progress-fill blue" id="bar-rssi"></div>
+              <div class="progress-fill" id="bar-soil" style="background: #22c55e;"></div>
             </div>
           </div>
         </div>
@@ -652,47 +504,20 @@
           </div>
         </div>
 
-        <!-- DEVICE INFO SECTION -->
-        <div class="info-container">
-          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main);">DEVICE INFO
-          </h3>
-          <div class="info-grid">
-            <div class="info-card">
-              <span class="info-label">WiFi SSID</span>
-              <span class="info-value" id="info-ssid">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">WiFi IP Address</span>
-              <span class="info-value" id="info-ip">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">LoRa RSSI</span>
-              <span class="info-value" id="info-rssi">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">LoRa Status</span>
-              <span class="info-value" id="info-lora">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">Blynk Status</span>
-              <span class="info-value" id="info-blynk">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">Control Room Uptime</span>
-              <span class="info-value" id="info-uptime">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">Firmware Version</span>
-              <span class="info-value" id="info-version">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">Last Telemetry Time</span>
-              <span class="info-value" id="info-last-time">--</span>
-            </div>
-            <div class="info-card">
-              <span class="info-label">Hardware Status</span>
-              <span class="info-value" id="info-hardware">--</span>
-            </div>
+        <!-- DEVICE INFO (WiFi RSSI ONLY) -->
+        <div class="power-card"
+          style="margin-top: 25px; background: var(--bg-card); padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span
+              style="font-size: 0.85rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">WiFi
+              RSSI</span>
+            <span id="info-rssi"
+              style="font-size: 1.1rem; font-weight: 800; color: #10b981; transition: color 0.3s ease;">--</span>
+          </div>
+          <div class="progress-container"
+            style="height: 10px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); overflow: hidden;">
+            <div class="progress-fill" id="info-bar-rssi"
+              style="height: 100%; width: 0%; transition: width 0.5s ease, background-color 0.5s ease;"></div>
           </div>
         </div>
 
@@ -707,7 +532,7 @@
   <script>
     'use strict';
 
-    // ===== CONFIG =====
+    // ===== CONFIGURATION =====
     const CONFIG = {
       SERVER_HOST: 'smartbox89.com',
       TOKEN: 'QkbaBmVPuqEVtr7wvfnGyBJp2i1pTV2H',
@@ -716,20 +541,20 @@
       VALVE_COOLDOWN: 5000
     };
 
-    // Check if hosted locally or on server
+    // Environment detection
     const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const serverHost = isLocal ? CONFIG.SERVER_HOST : window.location.host;
+    const secureProtocol = (window.location.protocol === 'https:' || isLocal) ? 'https:' : 'http:';
+    const wsProtocol = secureProtocol === 'https:' ? 'wss:' : 'ws:';
 
-    // Server host can be overridden by current window host if deployed
-    const host = isLocal ? CONFIG.SERVER_HOST : window.location.host;
-    const httpProtocol = isLocal ? 'https:' : window.location.protocol; // Realtime uses HTTPS 443
-    const wsProtocol = httpProtocol === 'https:' ? 'wss:' : 'ws:';
-
-    // API URLs (Realtime on 443, Diagnostics on 8080)
+    // Port 443 endpoints
     const BASE_URL_REALTIME = isLocal ? `https://${CONFIG.SERVER_HOST}/${CONFIG.TOKEN}` : `/api/${CONFIG.TOKEN}`;
+    const WS_URL = isLocal ? `wss://${CONFIG.SERVER_HOST}/ws` : `${wsProtocol}//${serverHost}/ws`;
+
+    // Diagnostic endpoints on port 8080
     const BASE_URL_DIAGNOSTICS = isLocal
       ? `http://${CONFIG.SERVER_HOST}:8080/${CONFIG.TOKEN}`
       : `http://${window.location.hostname}:8080/${CONFIG.TOKEN}`;
-    const WS_URL = isLocal ? `wss://${CONFIG.SERVER_HOST}/ws` : `${wsProtocol}//${host}/ws`;
 
     // ===== CENTRALIZED VALVE STATE MANAGER =====
     const ValveManager = {
@@ -742,11 +567,8 @@
       isInCooldown(zone) { return Date.now() < this.cooldownUntil[zone]; },
 
       updateFromPoll(zone, apiValue) {
-        if (this.isLocked(zone)) return;
-        if (this.isInCooldown(zone)) return;
-
+        if (this.isLocked(zone) || this.isInCooldown(zone)) return;
         const newState = String(apiValue === '1' ? '1' : '0');
-
         if (this.confirmedState[zone] !== newState) {
           this.confirmedState[zone] = newState;
           this._renderZone(zone);
@@ -763,7 +585,7 @@
         this.locked[zone] = true;
         this._renderZoneLoading(zone, true);
 
-        // Try to toggle via WebSocket if connected, otherwise fallback to HTTPS fetch
+        // Try WebSocket first, fallback to HTTP fetch
         let success = false;
         if (blynkSocket && blynkSocket.connected) {
           success = blynkSocket.sendVirtualWrite(pin, nextValue);
@@ -798,23 +620,21 @@
       },
 
       _renderZone(zone) {
-        const btn = el(`vbtn-${zone}`);
+        const btn = el(`pbtn-${zone}`);
         if (!btn) return;
         const isOn = this.confirmedState[zone] === '1';
         if (isOn) {
           btn.classList.add('active');
-          btn.textContent = 'ON';
         } else {
           btn.classList.remove('active');
-          btn.textContent = 'OFF';
         }
       },
 
       _renderZoneLoading(zone, loading) {
-        const btn = el(`vbtn-${zone}`);
+        const btn = el(`pbtn-${zone}`);
         if (!btn) return;
+        btn.disabled = loading;
         btn.style.opacity = loading ? '0.5' : '1';
-        btn.style.pointerEvents = loading ? 'none' : 'auto';
       }
     };
 
@@ -849,25 +669,61 @@
       bar.style.width = Math.min(100, (val / max) * 100) + '%';
     }
 
-    // ===== API LOGIC =====
-    async function fetchPin(pin) {
-      try {
-        const res = await fetch(`${BASE_URL_REALTIME}/get/${pin}`, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
-        const text = await res.text();
-        return parseBlynk(text);
-      } catch (e) { return null; }
-    }
-
-    function parseBlynk(text) {
-      if (!text) return null;
-      const t = text.trim();
-      if (t.startsWith('[')) {
-        try { const arr = JSON.parse(t); return arr[0]; } catch { return null; }
-      }
-      return t.includes('not exist') ? null : t;
-    }
-
     function toggleValve(zone) { ValveManager.toggle(zone); }
+
+    function updateStatusDot(id, isOnline) {
+      const dot = el(id);
+      if (!dot) return;
+      if (isOnline) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    }
+
+    // Convert RSSI value dynamically to standard scale
+    function updateSignalUI(rssi) {
+      const rssiVal = parseInt(rssi) || -120;
+      let pct = Math.round((rssiVal + 120) * (100 / 90));
+      pct = Math.min(100, Math.max(0, pct));
+
+      let color = '#ef4444'; // Poor (0-24%)
+      let label = 'Poor';
+
+      if (pct >= 75) {
+        color = '#22c55e'; // Excellent (75-100%)
+        label = 'Excellent';
+      } else if (pct >= 50) {
+        color = '#eab308'; // Good (50-74%)
+        label = 'Good';
+      } else if (pct >= 25) {
+        color = '#f97316'; // Weak (25-49%)
+        label = 'Weak';
+      }
+
+      // Device Info WiFi RSSI display
+      const infoRssi = el('info-rssi');
+      if (infoRssi) {
+        infoRssi.textContent = `${pct}% (${label})`;
+        infoRssi.style.color = color;
+      }
+      const infoBar = el('info-bar-rssi');
+      if (infoBar) {
+        infoBar.style.width = `${pct}%`;
+        infoBar.style.backgroundColor = color;
+        infoBar.style.boxShadow = `0 0 10px ${color}`;
+      }
+    }
+
+    // Ticking Local Clock
+    function updateClock() {
+      const clock = el('live-clock');
+      if (!clock) return;
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
     // ===== BLYNK BINARY WEBSOCKET CLIENT =====
     class BlynkWS {
@@ -908,7 +764,7 @@
         const tokenBytes = new TextEncoder().encode(this.token);
         const len = tokenBytes.length;
         const buf = new Uint8Array(5 + len);
-        buf[0] = 0x02; // BLYNK_CMD_LOGIN
+        buf[0] = 0x02; // Login
         buf[1] = (this.msgId >> 8) & 0xFF;
         buf[2] = this.msgId & 0xFF;
         buf[3] = (len >> 8) & 0xFF;
@@ -921,7 +777,7 @@
       sendPing() {
         if (!this.connected) return;
         const buf = new Uint8Array(5);
-        buf[0] = 0x06; // BLYNK_CMD_PING
+        buf[0] = 0x06; // Ping
         buf[1] = (this.msgId >> 8) & 0xFF;
         buf[2] = this.msgId & 0xFF;
         buf[3] = 0x00;
@@ -936,7 +792,7 @@
         const bodyBytes = new TextEncoder().encode(bodyStr);
         const len = bodyBytes.length;
         const buf = new Uint8Array(5 + len);
-        buf[0] = 0x14; // BLYNK_CMD_HARDWARE
+        buf[0] = 0x14; // Hardware
         buf[1] = (this.msgId >> 8) & 0xFF;
         buf[2] = this.msgId & 0xFF;
         buf[3] = (len >> 8) & 0xFF;
@@ -951,22 +807,16 @@
         if (data.byteLength < 5) return;
         const view = new DataView(data);
         const cmd = view.getUint8(0);
-        const val = view.getUint16(3); // Status or Length
+        const val = view.getUint16(3);
 
         if (cmd === 0x00) {
-          // Response to Login
           if (val === 200) {
-            console.log("Blynk WebSocket Logged In");
+            console.log("WebSocket connection authenticated");
             this.connected = true;
-            el('info-blynk').textContent = 'Online';
-            el('info-blynk').className = 'info-value status-badge online';
             this.pingInterval = setInterval(() => this.sendPing(), 5000);
-
-            // Force hide loader immediately on socket connection
             hideLoader();
           }
         } else if (cmd === 0x14) {
-          // Hardware/Virtual Write
           const bodyBytes = new Uint8Array(data, 5, val);
           const bodyStr = new TextDecoder().decode(bodyBytes);
           const parts = bodyStr.split('\0');
@@ -979,21 +829,14 @@
       }
 
       processWSUpdate(pin, value) {
-        const data = {};
-        data[pin] = value;
-
-        // Immediately update state manager if it's a valve
         if (pin === 'V0') ValveManager.updateFromPoll(1, value);
         if (pin === 'V1') ValveManager.updateFromPoll(2, value);
 
-        // Update UI
         renderWSMetrics(pin, value);
       }
 
       cleanup() {
         this.connected = false;
-        el('info-blynk').textContent = 'Offline';
-        el('info-blynk').className = 'info-value status-badge offline';
         if (this.pingInterval) {
           clearInterval(this.pingInterval);
           this.pingInterval = null;
@@ -1006,13 +849,9 @@
       }
     }
 
-    // Initialize websocket connection
     const blynkSocket = new BlynkWS(WS_URL, CONFIG.TOKEN);
 
-    // Update specific card dynamically from WS message
     function renderWSMetrics(pin, value) {
-      el('info-last-time').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
       if (pin === 'V2') updateGauge('temp', value, 50);
       if (pin === 'V3') updateGauge('humi', value, 100);
       if (pin === 'V4') {
@@ -1020,40 +859,39 @@
         updateBar('soil', value);
       }
       if (pin === 'V5') {
-        el('val-rssi').textContent = value;
-        el('info-rssi').textContent = value + ' dBm';
-        const rssiPct = Math.min(100, Math.max(0, (parseInt(value) + 110) * 1.5));
-        updateBar('rssi', rssiPct);
+        updateSignalUI(value);
       }
       if (pin === 'V6') {
-        const online = value === '1';
-        el('info-lora').textContent = online ? 'Online' : 'Offline';
-        el('info-lora').className = `info-value status-badge ${online ? 'online' : 'offline'}`;
+        updateStatusDot('dot-lora', value === '1');
       }
-      if (pin === 'V7') {
-        const ut = parseInt(value) || 0;
-        const h = Math.floor(ut / 3600), m = Math.floor((ut % 3600) / 60), s = ut % 60;
-        const pad = (num) => String(num).padStart(2, '0');
-        el('info-uptime').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-      }
-      if (pin === 'V8') {
-        el('val-light').textContent = value;
-        updateBar('light', value);
-      }
-      if (pin === 'V9') el('info-ssid').textContent = value;
-      if (pin === 'V10') el('info-ip').textContent = value;
-      if (pin === 'V11') el('info-version').textContent = value;
     }
 
-    // ===== POLLING REFRESH (FALLBACK MODE) =====
+    // ===== POLLING REFRESH (FALLBACK) =====
     let isRefreshing = false;
+
+    async function fetchPin(pin) {
+      try {
+        const res = await fetch(`${BASE_URL_REALTIME}/get/${pin}`, { signal: AbortSignal.timeout(CONFIG.TIMEOUT) });
+        const text = await res.text();
+        return parseBlynk(text);
+      } catch (e) { return null; }
+    }
+
+    function parseBlynk(text) {
+      if (!text) return null;
+      const t = text.trim();
+      if (t.startsWith('[')) {
+        try { return JSON.parse(t)[0]; } catch { return null; }
+      }
+      return t.includes('not exist') ? null : t;
+    }
 
     async function refresh() {
       if (isRefreshing) return;
       isRefreshing = true;
 
       try {
-        const pins = ['V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11'];
+        const pins = ['V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6'];
 
         // Get hardware connection status strictly on port 8080
         const [hwRes, ...pinRes] = await Promise.all([
@@ -1065,11 +903,13 @@
         const data = {};
         pins.forEach((p, i) => data[p] = pinRes[i]);
 
-        // Update Valve states
+        // Update hardware status indicator dot
+        updateStatusDot('dot-hw', hwOnline);
+
+        // Update Valves
         if (data.V0 !== null) ValveManager.updateFromPoll(1, String(data.V0));
         if (data.V1 !== null) ValveManager.updateFromPoll(2, String(data.V1));
 
-        // Render full interface
         renderNonValve(data, hwOnline);
 
       } catch (e) {
@@ -1081,50 +921,18 @@
     }
 
     function renderNonValve(data, hwOnline) {
-      // Header status
-      el('hw-dot').className = `online-dot ${hwOnline ? '' : 'offline'}`;
-      el('hw-text').textContent = hwOnline ? 'Online' : 'Offline';
-      el('last-sync').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-      // Device info fields
-      el('info-hardware').textContent = hwOnline ? 'Online' : 'Offline';
-      el('info-hardware').className = `info-value status-badge ${hwOnline ? 'online' : 'offline'}`;
-
-      // Update last sync time
-      el('info-last-time').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
       // Sensors
-      const soil = (data.V4 !== null && data.V4 !== undefined) ? data.V4 : '--';
-      el('val-soil').textContent = soil;
+      el('val-soil').textContent = data.V4 || '--';
       updateBar('soil', data.V4);
 
-      const light = (data.V8 !== null && data.V8 !== undefined) ? data.V8 : '--';
-      el('val-light').textContent = light;
-      updateBar('light', data.V8);
-
-      const rssi = (data.V5 !== null && data.V5 !== undefined) ? data.V5 : 0;
-      el('val-rssi').textContent = rssi;
-      el('info-rssi').textContent = rssi + ' dBm';
-      const rssiPct = Math.min(100, Math.max(0, (parseInt(rssi) + 110) * 1.5));
-      updateBar('rssi', rssiPct);
+      updateSignalUI(data.V5);
 
       // Gauges
       updateGauge('humi', data.V3, 100);
       updateGauge('temp', data.V2, 50);
 
-      // Diagnostic parameters
-      const loraOnline = data.V6 === '1';
-      el('info-lora').textContent = loraOnline ? 'Online' : 'Offline';
-      el('info-lora').className = `info-value status-badge ${loraOnline ? 'online' : 'offline'}`;
-
-      const ut = (data.V7 !== null && data.V7 !== undefined) ? parseInt(data.V7) : 0;
-      const h = Math.floor(ut / 3600), m = Math.floor((ut % 3600) / 60), s = ut % 60;
-      const pad = (num) => String(num).padStart(2, '0');
-      el('info-uptime').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-
-      if (data.V9) el('info-ssid').textContent = data.V9;
-      if (data.V10) el('info-ip').textContent = data.V10;
-      if (data.V11) el('info-version').textContent = data.V11;
+      // Status Indicator Dot
+      updateStatusDot('dot-lora', data.V6 === '1');
     }
 
     function hideLoader() {
@@ -1140,13 +948,11 @@
       // Connect WS
       blynkSocket.connect();
 
-      // Refresh data
+      // Trigger initial poll
       refresh();
-
-      // Fallback periodic refresh
       setInterval(refresh, CONFIG.REFRESH);
 
-      // Safety timeout to hide spinner after 1.5 seconds maximum
+      // Safety timeout for loading spinner
       setTimeout(hideLoader, 1500);
     });
   </script>
